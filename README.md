@@ -1,4 +1,4 @@
-# format-lines
+# format-lines [![NuGet Badge](https://buildstats.info/nuget/format-lines)](https://www.nuget.org/packages/format-lines/)
 
 This is a simple tool to format every line in a text file or stdin.
 
