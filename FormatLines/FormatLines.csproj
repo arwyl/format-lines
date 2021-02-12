@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5</TargetFramework>
+    <AssemblyName>format-lines</AssemblyName>
+    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <Copyright>Copyright (c) 2021 arwyl</Copyright>
+    <Authors>arwyl</Authors>
+    <PackageProjectUrl>https://github.com/arwyl/format-lines</PackageProjectUrl>
+    <PackageLicense>https://github.com/arwyl/format-lines/blob/main/LICENSE</PackageLicense>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/arwyl/format-lines</RepositoryUrl>
+    <Product>format-lines tool</Product>
+    <PackAsTool>true</PackAsTool>
+    <PackageOutputPath>../nupkg</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>FormatLines.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>
