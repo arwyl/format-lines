@@ -1,8 +1,8 @@
 ﻿using System;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using CommandLine;
 using FormatLines.IO;
 using FormatLines.LineProcessors;
 
@@ -10,9 +10,61 @@ namespace FormatLines
 {
 	class Program
 	{
-		private static async Task Main(params string[] args)
+		private static Task Main(params string[] args)
 		{
-			await Parser.Default.ParseArguments<ConsoleOptions>(args).WithParsedAsync(RunAsync);
+			var rootCommand = new RootCommand
+			{
+				new Argument<string>("format", "Line format where {0} is initial line."),
+				new Option<FileInfo?>(
+					new [] { "--input", "-i" },
+					description: "Input file to be processed. If not set stdin will be used."
+				),
+				new Option<string?>(
+					new [] { "--delimiter", "-d" },
+					"Delimiter for formatted lines. Default value is new line."
+				),
+				new Option<bool>(
+					new [] { "--trim", "-t" },
+					"If set, the input lines will be trimmed before formatting."
+				),
+				new Option<bool>(
+					new [] { "--ignore-empty-lines", "-e" },
+					"If set, empty or whitespace lines will not be formatted and included in result."
+				),
+				new Option<int?>(
+					new [] { "--min-length", "-m" },
+					"Minimum length for lines to be formatted and included in result."
+				),
+				new Option<FileInfo?>(
+					new [] { "--output",  "-o" },
+					description: "Output file name. If not set, stdout will be used."
+				)
+			};
+
+			rootCommand.Handler = CommandHandler.Create(
+				(
+					string format,
+					FileInfo? input,
+					string? delimiter,
+					bool trim,
+					bool ignoreEmptyLines,
+					int? minLength,
+					FileInfo? output
+				) =>
+				{
+					var opts = new ConsoleOptions(format, delimiter ?? Environment.NewLine)
+					{
+						IgnoreEmptyLines = ignoreEmptyLines,
+						Input = input,
+						MinLength = minLength,
+						Output = output,
+						Trim = trim
+					};
+
+					return RunAsync(opts);
+				});
+
+			return rootCommand.InvokeAsync(args);
 		}
 
 		private static async Task RunAsync(ConsoleOptions options)
@@ -28,24 +80,30 @@ namespace FormatLines
 
 			using var reader = GetLineReader(options);
 
-			await using var writer = GetLineWriter(options, options.Delimiter ?? Environment.NewLine);
+			await using var writer = GetLineWriter(options);
 
 			await flow.RunAsync(reader, writer);
 		}
 
 		private static ILineReader GetLineReader(ConsoleOptions options)
 		{
-			var innerReader = string.IsNullOrEmpty(options.Input) ? Console.In : File.OpenText(options.Input);
+			var innerReader = options.Input?.OpenText() ?? Console.In;
 			return new LineReader(innerReader);
 		}
 
-		private static ILineWriter GetLineWriter(ConsoleOptions options, string delimiter)
+		private static ILineWriter GetLineWriter(ConsoleOptions options)
 		{
-			var innerWriter = string.IsNullOrEmpty(options.Output) ? Console.Out : new StreamWriter(options.Output, false, Encoding.UTF8);
+			// if user types input manually and wants to see output there also
+			if(options.Input == null && options.Output == null && !Console.IsInputRedirected && !Console.IsOutputRedirected && options.Delimiter == Environment.NewLine)
+			{
+				return new ConsoleCorrectorWriter();
+			}
 
-			var isManualInput = string.IsNullOrEmpty(options.Input) && !Console.IsInputRedirected;
+			var innerWriter = options.Output?.CreateText() ?? Console.Out;
 
-			return isManualInput ? new AutoFlushLineWriter(innerWriter, delimiter) : new LineWriter(innerWriter, delimiter);
+			var needsAutoFlush = options.Input == null && !Console.IsInputRedirected;
+
+			return needsAutoFlush ? new AutoFlushLineWriter(innerWriter, options.Delimiter) : new LineWriter(innerWriter, options.Delimiter);
 		}
 	}
 }

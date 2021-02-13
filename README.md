@@ -20,22 +20,42 @@ dotnet tool update -g format-lines
 
 ## How to use it
 
+```console
+format-lines [options] format
+
+Arguments:
+  format    Line format where {0} is initial line.
+
+Options:
+  -i, --input                      Input file to be processed. If not set stdin will be used.
+  -d, --delimiter                  Delimiter for formatted lines. Default value is new line.
+  -t, --trim                       If set, the input lines will be trimmed before formatting.
+  -e, --ignore-empty-lines         If set, empty or whitespace lines will not be formatted and included in result.
+  -m, --min-length                 Minimum length for lines to be formatted and included in result.
+  -o, --output                     Output file name. If not set, stdout will be used.
+  --version                        Show version information
+  -?, -h, --help                   Show help and usage information
+```
+
+
+## Examples
+
 Add single quotes for every line in input.txt and save it to output.txt:
 
 ```console
-format-lines -f '{0}' -i input.txt -o output.txt
+format-lines '{0}' -i input.txt -o output.txt
 ```
 
 or:
 
 ```console
-format-lines -f '{0}' > output.txt < input.txt
+format-lines '{0}' > output.txt < input.txt
 ```
 
 Write lines manually and save them surrounded by simgle quotes to output.txt:
 
 ```console
-format-lines -f '{0}' -o output.txt
+format-lines '{0}' -o output.txt
 ```
 
 Note: you can exit this process with <kbd>Ctrl</kbd> + <kbd>C</kbd>.
@@ -44,23 +64,8 @@ Note: you can exit this process with <kbd>Ctrl</kbd> + <kbd>C</kbd>.
 Trim all lines, remove every empty line, remove all lines with length less than 2 and format like pseudoo json with square brackets '[ "value": "%MyLine%" ],' for every line in input.txt and save it to output.txt in a single line with comma as delimiter:
 
 ```console
-format-lines --format "[ ""value"": ""{0}"" ]" --input input.txt --trim --ignore-empty-lines --min-length 2 --delimiter , --output output.txt
+format-lines "[ ""value"": ""{0}"" ]" --input input.txt --trim --ignore-empty-lines --min-length 2 --delimiter , --output output.txt
 ```
-
-
-## All available options
-
-| Short name        | Long name            | Description                                                                     |
-| ----------------- | -------------------- | ------------------------------------------------------------------------------- |
-| -f                | --format             | Required. Line format where {0} is initial line.                                |
-| -i                | --input              | Input file to be processed. If not set stdin will be used.                      |
-| -d                | --delimiter          | Delimiter for formatted lines. Default value is new line.                       |
-| -t                | --trim               | If set, the input lines will be trimmed before formatting.                      |
-| -e                | --ignore-empty-lines | If set, empty or whitespace lines will not be formatted and included in result. |
-| -m                | --min-length         | Minimum length for lines to be formatted and included in result.                |
-| -o                | --output             | Output file name. If not set, stdout will be used.                              |
-|                   | --help               | Display this help screen.                                                       |
-|                   | --version            | Display version information.                                                    |
 
 
 ## P.S.
