@@ -1,4 +1,4 @@
-# format-lines [![NuGet Badge](https://buildstats.info/nuget/format-lines)](https://www.nuget.org/packages/format-lines/)
+# format-lines [![NuGet Badge](https://img.shields.io/nuget/v/format-lines)](https://www.nuget.org/packages/format-lines/)
 
 This is a simple tool to format every line in a text file or stdin.
 
@@ -61,7 +61,7 @@ format-lines '{0}' -o output.txt
 Note: you can exit this process with <kbd>Ctrl</kbd> + <kbd>C</kbd>.
 
 
-Trim all lines, remove every empty line, remove all lines with length less than 2 and format like pseudoo json with square brackets '[ "value": "%MyLine%" ],' for every line in input.txt and save it to output.txt in a single line with comma as delimiter:
+Trim all lines, remove every empty line, remove all lines with length less than 2, format to some pseudo json with square brackets '[ "value": "%MyLine%" ]' every line in input.txt and save it to output.txt in a single line with comma as delimiter:
 
 ```console
 format-lines "[ ""value"": ""{0}"" ]" --input input.txt --trim --ignore-empty-lines --min-length 2 --delimiter , --output output.txt
